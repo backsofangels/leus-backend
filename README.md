@@ -22,13 +22,13 @@
 
 ### Using Docker/Podman Compose (Recommended)
 
-1.  **Clone the repository**
+1. **Clone the repository**
     ```bash
     git clone <repository-url>
     cd leus-backend
     ```
 
-2.  **Build and start the services**
+2. **Build and start the services**
     ```bash
     podman compose up --build
     ```
@@ -38,31 +38,31 @@
     docker-compose up --build
     ```
 
-3.  **Access the API**
+3. **Access the API**
     - API: `http://localhost:3000`
     - Interactive API docs: `http://localhost:3000/docs`
     - Alternative docs: `http://localhost:3000/redoc`
 
 ### Local Development Setup
 
-1.  **Create a virtual environment**
+1. **Create a virtual environment**
     ```bash
     python -m venv venv
     venv\Scripts\activate  # Windows
     source venv/bin/activate  # Linux/Mac
     ```
 
-2.  **Install dependencies**
+2. **Install dependencies**
     ```bash
     pip install -r requirements.txt
     ```
 
-3.  **Start Redis** (required)
+3. **Start Redis** (required)
     ```bash
     podman run -d -p 6379:6379 redis:7-alpine
     ```
 
-4.  **Run the application**
+4. **Run the application**
     ```bash
     uvicorn app.main:app --port 3000 --reload
     ```
