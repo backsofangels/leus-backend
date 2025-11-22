@@ -5,6 +5,9 @@ from typing import Optional
 class RedisStore:
     """Redis storage layer for URL shortener service."""
     
+    # TTL for URL mappings in seconds (10 minutes)
+    URL_TTL = 600
+    
     def __init__(self, host: str = None, port: int = 6379, db: int = 0):
         """
         Initialize Redis connection.
@@ -24,15 +27,17 @@ class RedisStore:
             decode_responses=True  # Automatically decode bytes to strings
         )
     
-    def set_url(self, short_code: str, long_url: str) -> None:
+    def set_url(self, short_code: str, long_url: str, ttl: int = None) -> None:
         """
-        Store a URL mapping (short code -> long URL).
+        Store a URL mapping (short code -> long URL) with TTL.
         
         Args:
             short_code: The shortened URL code
             long_url: The original long URL
+            ttl: Time to live in seconds (defaults to URL_TTL)
         """
-        self.client.set(f"url:{short_code}", long_url)
+        ttl = ttl if ttl is not None else self.URL_TTL
+        self.client.setex(f"url:{short_code}", ttl, long_url)
     
     def get_url(self, short_code: str) -> Optional[str]:
         """
@@ -46,15 +51,17 @@ class RedisStore:
         """
         return self.client.get(f"url:{short_code}")
     
-    def set_reverse_mapping(self, long_url: str, short_code: str) -> None:
+    def set_reverse_mapping(self, long_url: str, short_code: str, ttl: int = None) -> None:
         """
-        Store a reverse mapping (long URL -> short code).
+        Store a reverse mapping (long URL -> short code) with TTL.
         
         Args:
             long_url: The original long URL
             short_code: The shortened URL code
+            ttl: Time to live in seconds (defaults to URL_TTL)
         """
-        self.client.set(f"reverse:{long_url}", short_code)
+        ttl = ttl if ttl is not None else self.URL_TTL
+        self.client.setex(f"reverse:{long_url}", ttl, short_code)
     
     def get_short_code(self, long_url: str) -> Optional[str]:
         """
@@ -91,6 +98,18 @@ class RedisStore:
             return self.client.ping()
         except redis.ConnectionError:
             return False
+    
+    def get_ttl(self, short_code: str) -> int:
+        """
+        Get the remaining time to live for a short code.
+        
+        Args:
+            short_code: The shortened URL code
+            
+        Returns:
+            Remaining TTL in seconds, -1 if key exists but has no TTL, -2 if key doesn't exist
+        """
+        return self.client.ttl(f"url:{short_code}")
 
 
 # Global instance
