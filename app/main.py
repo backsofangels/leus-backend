@@ -13,9 +13,9 @@ async def root():
 
 @app.post("/short")
 async def short(request: ShortenRequest) -> ShortenResponse:
-    shortened_url = shorten_url(request.url_to_short)
+    shortened_url = shorten_url(request.long_url)
     return ShortenResponse(
-        shortened=shortened_url
+        short_url=shortened_url
     )
 
 @app.post("/reverse")
