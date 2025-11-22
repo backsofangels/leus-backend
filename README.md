@@ -6,9 +6,11 @@
 
 - **Fast & Efficient**: Built on FastAPI for high-performance async operations
 - **Persistent Storage**: Uses Redis for reliable, scalable data persistence
+- **Automatic Expiration**: URLs expire after 10 minutes (configurable TTL)
 - **Duplicate Prevention**: Automatically returns existing short URLs for previously shortened links
 - **Containerized**: Fully containerized with Podman/Docker Compose for easy deployment
 - **RESTful API**: Clean, well-documented API endpoints
+- **Comprehensive Testing**: Full test suite covering all functionality
 
 ## 📋 Prerequisites
 
@@ -20,50 +22,50 @@
 
 ### Using Docker/Podman Compose (Recommended)
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd leus-backend
-   ```
+1.  **Clone the repository**
+    ```bash
+    git clone <repository-url>
+    cd leus-backend
+    ```
 
-2. **Build and start the services**
-   ```bash
-   podman compose up --build
-   ```
-   
-   Or with Docker:
-   ```bash
-   docker-compose up --build
-   ```
+2.  **Build and start the services**
+    ```bash
+    podman compose up --build
+    ```
 
-3. **Access the API**
-   - API: `http://localhost:3000`
-   - Interactive API docs: `http://localhost:3000/docs`
-   - Alternative docs: `http://localhost:3000/redoc`
+    Or with Docker:
+    ```bash
+    docker-compose up --build
+    ```
+
+3.  **Access the API**
+    - API: `http://localhost:3000`
+    - Interactive API docs: `http://localhost:3000/docs`
+    - Alternative docs: `http://localhost:3000/redoc`
 
 ### Local Development Setup
 
-1. **Create a virtual environment**
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate  # Windows
-   source venv/bin/activate  # Linux/Mac
-   ```
+1.  **Create a virtual environment**
+    ```bash
+    python -m venv venv
+    venv\Scripts\activate  # Windows
+    source venv/bin/activate  # Linux/Mac
+    ```
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+2.  **Install dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-3. **Start Redis** (required)
-   ```bash
-   podman run -d -p 6379:6379 redis:7-alpine
-   ```
+3.  **Start Redis** (required)
+    ```bash
+    podman run -d -p 6379:6379 redis:7-alpine
+    ```
 
-4. **Run the application**
-   ```bash
-   uvicorn app.main:app --port 3000 --reload
-   ```
+4.  **Run the application**
+    ```bash
+    uvicorn app.main:app --port 3000 --reload
+    ```
 
 ## 📚 API Documentation
 
@@ -164,9 +166,15 @@ leus-backend/
 │   │   └── shortener.py     # URL shortening business logic
 │   └── storage/
 │       └── redis_store.py   # Redis storage layer
+├── tests/                   # Test suite
+│   ├── conftest.py          # Test fixtures
+│   ├── test_main.py         # API tests
+│   ├── test_redis_store.py  # Storage tests
+│   └── test_shortener.py    # Service tests
 ├── docker-compose.yml       # Docker Compose configuration
 ├── Dockerfile              # Container image definition
 ├── requirements.txt        # Python dependencies
+├── requirements-test.txt   # Testing dependencies
 └── README.md              # This file
 ```
 
@@ -184,7 +192,26 @@ leus-backend/
 
 ## 🧪 Testing
 
-Test the service using the interactive API documentation at `http://localhost:3000/docs` or use the example cURL commands above.
+The project includes a comprehensive test suite using `pytest`.
+
+### Running Tests
+
+1.  **Install test dependencies**
+    ```bash
+    pip install -r requirements-test.txt
+    ```
+
+2.  **Run all tests**
+    ```bash
+    pytest
+    ```
+
+3.  **Run with coverage**
+    ```bash
+    pytest --cov=app --cov-report=term-missing
+    ```
+
+You can also test the service manually using the interactive API documentation at `http://localhost:3000/docs`.
 
 ## 🛡️ Technical Details
 
@@ -198,6 +225,7 @@ Test the service using the interactive API documentation at `http://localhost:30
 
 - **Redis** for persistent, high-performance key-value storage
 - Separate namespaces for URL mappings (`url:*`) and reverse lookups (`reverse:*`)
+- **TTL Support**: URLs automatically expire after 10 minutes (600 seconds)
 - Thread-safe operations using Redis atomic commands
 - Connection pooling for optimal performance
 
@@ -212,7 +240,7 @@ This is a personal learning project, but suggestions and improvements are welcom
 ## 🔮 Future Enhancements
 
 - [ ] Custom short URL aliases
-- [ ] URL expiration/TTL support
+- [x] ~~URL expiration/TTL support~~ (Implemented)
 - [ ] Analytics and click tracking
 - [ ] Rate limiting
 - [ ] API authentication
